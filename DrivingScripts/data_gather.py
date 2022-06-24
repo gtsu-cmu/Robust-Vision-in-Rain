@@ -1138,6 +1138,14 @@ class CameraManager(object):
         )
         self.semantic.listen(self.record_semantic)
         
+        self.instance = self._parent.get_world().spawn_actor(
+            self.sensors[4][-1],
+            self._camera_transforms[1][0],
+            attach_to=self._parent,
+            attachment_type=self._camera_transforms[1][1]
+        )
+        self.instance.listen(self.record_instance)
+        
         self.depth_raw = self._parent.get_world().spawn_actor(
             self.sensors[6][-1],
             self._camera_transforms[1][0],
@@ -1171,6 +1179,11 @@ class CameraManager(object):
         if 's' in self.record:
             self.record = self.record.replace('s', '')
             event.save_to_disk('./carla_data/' + str(self.record_time) + '_semantic.png')
+    
+    def record_instance(self, event):
+        if 'i' in self.record:
+            self.record = self.record.replace('i', '')
+            event.save_to_disk('./carla_data/' + str(self.record_time) + '_instance.png')
     
     def record_depth(self, event):
         if 'd' in self.record:
@@ -1365,7 +1378,7 @@ def game_loop(args):
                     if vel.x == 0 and vel.y == 0 and vel.z == 0:
                         state = 2
                         world.camera_manager.count = 0
-                        world.camera_manager.record = 'srld' #'sirld'
+                        world.camera_manager.record = 'sirld' #'sirld'
                 elif state == 2:
                     if world.camera_manager.record == '':
                         preset = world.camera_manager.presets[1]
