@@ -20,6 +20,7 @@ Use ARROWS or WASD keys for control.
     Q            : toggle reverse
     Space        : hand-brake
     P            : toggle autopilot
+    J            : enforce intervention manual control
     M            : toggle manual transmission
     ,/.          : gear up/down
     CTRL + W     : toggle constant velocity mode at 60 km/h
@@ -72,7 +73,6 @@ try:
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 except IndexError:
-    print("here")
     pass
 
 sys.path.append('/opt/carla-simulator/PythonAPI/carla')
@@ -127,6 +127,7 @@ try:
     from pygame.locals import K_g
     from pygame.locals import K_h
     from pygame.locals import K_i
+    from pygame.locals import K_j
     from pygame.locals import K_l
     from pygame.locals import K_m
     from pygame.locals import K_n
@@ -409,6 +410,7 @@ class KeyboardControl(object):
             raise NotImplementedError("Actor type not supported")
         self._steer_cache = 0.0
         self.stopping = False
+        self.intervention = False
         world.hud.notification("Press 'H' or '?' for help.", seconds=4.0)
 
     def parse_events(self, client, world, clock, sync_mode):
@@ -573,8 +575,10 @@ class KeyboardControl(object):
                         current_lights ^= carla.VehicleLightState.LeftBlinker
                     elif event.key == K_x:
                         current_lights ^= carla.VehicleLightState.RightBlinker
+                    elif event.key == K_j:
+                        self.intervention = not self.intervention
 
-        if not self._autopilot_enabled:
+        if self.intervention or not self._autopilot_enabled:
             if isinstance(self._control, carla.VehicleControl):
                 self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
                 self._control.reverse = self._control.gear < 0
@@ -1297,7 +1301,8 @@ def game_loop(args):
         sim_world.wait_for_tick()
         traffic_gen.spawn_others(args, client, sim_world)
         sim_world.wait_for_tick()
-        
+
+        traffic_manager = client.get_trafficmanager()        
         if args.sync:
             original_settings = sim_world.get_settings()
             settings = sim_world.get_settings()
@@ -1306,7 +1311,6 @@ def game_loop(args):
                 settings.fixed_delta_seconds = 0.05
             sim_world.apply_settings(settings)
 
-            traffic_manager = client.get_trafficmanager()
             traffic_manager.set_synchronous_mode(True)
 
         if args.autopilot and not sim_world.get_settings().synchronous_mode:
@@ -1322,6 +1326,9 @@ def game_loop(args):
         hud = HUD(args.width, args.height)
         world = World(sim_world, hud, args)
         controller = KeyboardControl(world, args.autopilot)
+        
+        if args.car_lights_on:
+            controller._lights = carla.VehicleLightState.LowBeam
         
         world.camera_manager.toggle_camera()
         controller._autopilot_enabled = not controller._autopilot_enabled
@@ -1373,6 +1380,7 @@ def game_loop(args):
                     state = 0
                     count = 0
                     traffic_gen.global_stop = False
+                    #traffic_manager.global_percentage_speed_difference(30)
                 elif state == 1:
                     vel = world.player.get_velocity()
                     if vel.x == 0 and vel.y == 0 and vel.z == 0:
@@ -1405,6 +1413,7 @@ def game_loop(args):
                     #world.player.set_autopilot(False)
                     world.camera_manager.record_time = time.time()
                     traffic_gen.global_stop = True
+                    #traffic_manager.global_percentage_speed_difference(100)
 
     finally:
 
@@ -1543,7 +1552,7 @@ def main():
     argparser.add_argument(
         '--car-lights-on',
         action='store_true',
-        default=False,
+        default=True,
         help='Enable automatic car light management')
     argparser.add_argument(
         '--hero',
@@ -1553,7 +1562,7 @@ def main():
     argparser.add_argument(
         '--respawn',
         action='store_true',
-        default=False,
+        default=True,
         help='Automatically respawn dormant vehicles (only in large maps)')
     argparser.add_argument(
         '--no-rendering',
