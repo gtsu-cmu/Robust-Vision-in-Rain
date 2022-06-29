@@ -222,7 +222,10 @@ map_carla_id_to_train_id = {
     19:  0, # Static       #
     20:  0, # Dynamic      #
     21:  0, # Water        #
-    22: 13  # Terrain      # Terrain      # (145, 170, 100)
+    22: 13,  # Terrain      # Terrain      # (145, 170, 100)
+    23: 14, #ConstructionVehicle
+    24: 15, #workzone_object
+    25: 16 #Detour
 }
 
 def encode_labels(mask, map):

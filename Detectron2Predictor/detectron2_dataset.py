@@ -6,7 +6,7 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog, DatasetCatalog
 
 class Detectron2CustomDataset:
-    train_classes = ['Unlabeled', 'Building', 'Fence', 'Pedestrian', 'Pole', 'Road', 'SideWalk', 'Vegetation', 'Vehicles', 'Wall', 'TrafficSign', 'Sky', 'TrafficLight', 'Terrain']
+    train_classes = ['Unlabeled', 'Building', 'Fence', 'Pedestrian', 'Pole', 'Road', 'SideWalk', 'Vegetation', 'Vehicles', 'Wall', 'TrafficSign', 'Sky', 'TrafficLight', 'Terrain', 'ConstructionVehicle', 'workzone_object', 'Detour']
     train_colors = [(0, 0, 0), (70, 70, 70), (100, 40, 40), (220, 20, 60), (153, 153, 153), (128, 64, 128), (244, 35, 232), (107, 142, 35), (0, 0, 142), (102, 102, 156), (220, 220, 0), (70, 130, 180), (250, 170, 30), (145, 170, 100)]
     
     def __init__(self, train_dataset_name, val_dataset_name, get_train_dicts_fn, get_val_dicts_fn, classes=None, colors=None, ignore_label=0):

@@ -37,7 +37,7 @@ class Detectron2Trainer:
         # self.cfg.DATASETS.TEST = (self.train_dataset_name,)
         self.cfg.DATASETS.TEST = (self.val_dataset_name,)
 
-        self.cfg.DATALOADER.NUM_WORKERS = 2
+        self.cfg.DATALOADER.NUM_WORKERS = 3
 
         self.cfg.INPUT.MIN_SIZE_TRAIN = 720
         self.cfg.INPUT.MAX_SIZE_TRAIN = 2048
@@ -46,12 +46,13 @@ class Detectron2Trainer:
 
         # Number of images per batch across all machines. This is also the number
         # of training images per step (i.e. per iteration).
-        self.cfg.SOLVER.IMS_PER_BATCH = 8
+        self.cfg.SOLVER.IMS_PER_BATCH = 4
         self.cfg.SOLVER.BASE_LR = 0.01
         self.cfg.SOLVER.GAMMA = 0.1
+        self.cfg.REFERENCE_WORLD_SIZE = 3
         
         # self.cfg.SOLVER.MAX_ITER = 20000
-        # # The iteration number to decrease learning rate by GAMMA.
+        # The iteration number to decrease learning rate by GAMMA.
         # self.cfg.SOLVER.STEPS = (10000, 15000, 18000, 19000)
         # # Save a checkpoint after every this number of iterations
         # self.cfg.SOLVER.CHECKPOINT_PERIOD = 1000
@@ -65,6 +66,8 @@ class Detectron2Trainer:
         self.cfg.MODEL.SEM_SEG_HEAD.IGNORE_VALUE = 0
         classes = MetadataCatalog.get(self.train_dataset_name).stuff_classes
         self.cfg.MODEL.SEM_SEG_HEAD.NUM_CLASSES = len(classes)
+        #self.cfg.MODEL.SEM_SEG_HEAD.NUM_CLASSES = 17
+        #print(len(classes))
         
         # Directory where output files are written
         self.cfg.OUTPUT_DIR = output_folder

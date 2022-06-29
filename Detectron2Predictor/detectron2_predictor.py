@@ -60,6 +60,7 @@ class Detectron2Predictor:
             
             classes = MetadataCatalog.get('train').stuff_classes
             self.cfg.MODEL.SEM_SEG_HEAD.NUM_CLASSES = len(classes)
+            #self.cfg.MODEL.SEM_SEG_HEAD.NUM_CLASSES = 17
         
         elif self.head == 'InstanceSegmentation':
             config_file = 'COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml' # 1539 MiB
