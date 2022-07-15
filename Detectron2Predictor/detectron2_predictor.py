@@ -90,7 +90,8 @@ class Detectron2Predictor:
         # Input: BGR
         
         if show_original == True and output_prediction == False:
-            imshow_jupyter(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), size=size)
+            pass
+            #imshow_jupyter(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), size=size)
         
         if output_prediction == False:
             v = Visualizer(image[:, :, ::-1], MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
@@ -145,7 +146,8 @@ class Detectron2Predictor:
         image = cv2.cvtColor(out.get_image()[:, :, ::-1], cv2.COLOR_BGR2RGB)
         
         if show_prediction == True:
-            imshow_jupyter(image, size=size)
+            pass
+            #imshow_jupyter(image, size=size)
 
         if measure_time == True:
             print(f'Time = {stop_time - start_time}, freq = {1/(stop_time - start_time)}')
